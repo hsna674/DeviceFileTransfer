@@ -4,7 +4,6 @@ import os
 
 app = Flask(__name__)
 app.secret_key = os.urandom(32)
-app.config['APPLICATION_ROOT'] = '/file-transfer'
 app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
 file_transfer = Blueprint('file_transfer', __name__, url_prefix='/file-transfer')
