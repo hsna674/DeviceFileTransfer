@@ -1,8 +1,11 @@
 from flask import Flask, request, redirect, url_for, session, render_template_string
+from werkzeug.middleware.proxy_fix import ProxyFix
 import os
 
 app = Flask(__name__)
 app.secret_key = os.urandom(32)
+app.config['APPLICATION_ROOT'] = '/file-transfer'
+app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
 USERNAME = "admin"
 PASSWORD = "S3cureP@ssw0rd!2025"
