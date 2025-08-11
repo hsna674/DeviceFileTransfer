@@ -37,7 +37,7 @@ def logout():
     session.pop("logged_in", None)
     return redirect(url_for("login"))
 
-@app.route("/file-transfer/")
+@app.route("/")
 def hello():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
