@@ -19,7 +19,7 @@ login_form = '''
 </form>
 '''
 
-@app.route("/file-transfer/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     error = None
     if request.method == "POST":
@@ -32,7 +32,7 @@ def login():
             error = "Invalid credentials."
     return render_template_string(login_form, error=error)
 
-@app.route("/file-transfer/logout")
+@app.route("/logout")
 def logout():
     session.pop("logged_in", None)
     return redirect(url_for("login"))
