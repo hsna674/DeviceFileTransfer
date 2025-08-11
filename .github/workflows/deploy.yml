@@ -10,36 +10,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Load deploy key into ssh-agent
-        uses: webfactory/ssh-agent@v0.9.0
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-
-      - name: Add server to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-          
-      - name: Pull & deploy on server
-        env:
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-        run: |
-          set -e
-          SSH_PORT=${DEPLOY_PORT:-22}
-          ssh -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$DEPLOY_USER@$DEPLOY_HOST" 'bash -s' <<'EOF'
-            set -e
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
             cd /home/deploy/sites/DeviceFileTransfer
             git fetch --prune
-            git reset --hard origin/main   # ensures working copy matches origin/main exactly
-            if [ -f .venv/bin/activate ]; then
-              source .venv/bin/activate
-              python3 -m pip install --upgrade pip
-              python3 -m pip install -r requirements.txt
-            else
-              python3 -m pip install -r requirements.txt
-            fi
+            git reset --hard origin/main
+            source .venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
             sudo /bin/systemctl restart site-file-transfer
-          EOF
