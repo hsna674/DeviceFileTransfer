@@ -38,7 +38,11 @@ def logout():
     return redirect(url_for("login"))
 
 @app.route("/")
-def hello():
+def main():
+    return redirect(url_for("dashboard"))
+
+@app.route("/dashboard")
+def dashboard():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
     return "Hello, World 2! (You are logged in)"
