@@ -27,7 +27,7 @@ def login():
         password = request.form.get("password")
         if username == USERNAME and password == PASSWORD:
             session["logged_in"] = True
-            return redirect(url_for("hello"))
+            return redirect(url_for("main"))
         else:
             error = "Invalid credentials."
     return render_template_string(login_form, error=error)
@@ -39,10 +39,6 @@ def logout():
 
 @app.route("/")
 def main():
-    return redirect(url_for("dashboard"))
-
-@app.route("/dashboard")
-def dashboard():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
     return "Hello, World 2! (You are logged in)"
