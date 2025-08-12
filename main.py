@@ -92,8 +92,9 @@ def hello():
         return redirect(url_for('file_transfer.login'))
     return f"Hello, {session.get('username', 'User')}!"
 
+with app.app_context():
+    init_db()
 app.register_blueprint(file_transfer)
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=not PRODUCTION)
