@@ -8,10 +8,12 @@ app.secret_key = os.urandom(32)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
 if PRODUCTION:
+    print("Using production mode")
     url_prefix = "/file-transfer"
     USERNAME = "admin"
     PASSWORD = "S3cureP@ssw0rd!2025"
 else:
+    print("Using development mode")
     url_prefix = ""
     USERNAME = "admin"
     PASSWORD = "admin"
