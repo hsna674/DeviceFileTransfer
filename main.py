@@ -32,13 +32,11 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_user_upload_folder(username):
-    """Get the upload folder path for a specific user"""
     user_folder = os.path.join(UPLOAD_FOLDER, username)
     os.makedirs(user_folder, exist_ok=True)
     return user_folder
 
 def get_file_list():
-    """Get list of uploaded files for the current user, sorted by modification time (newest first)"""
     if not session.get("username"):
         return []
 
@@ -60,7 +58,6 @@ def get_file_list():
     return files[:10]
 
 def cleanup_old_files():
-    """Remove files beyond the 10 most recent for the current user"""
     if not session.get("username"):
         return
 
