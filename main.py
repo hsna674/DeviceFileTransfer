@@ -3,10 +3,19 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
+from datetime import timedelta
 
 PRODUCTION = os.environ.get('PRODUCTION', '').lower() in ['1', 'true', 'yes']
 app = Flask(__name__)
-app.secret_key = os.urandom(32)
+
+SECRET_KEY = os.environ.get('SECRET_KEY', '2d810d71054ae86a971f31b1dcecaeb9f3ed6c0069a91cdf6f')
+app.secret_key = SECRET_KEY
+
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+app.config['SESSION_COOKIE_SECURE'] = PRODUCTION
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
 app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
 DATABASE = os.path.join(os.path.dirname(__file__), 'users.db')
@@ -73,6 +82,7 @@ def login():
         db = get_db()
         user = db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
         if user and check_password_hash(user[2], password):
+            session.permanent = True
             session["logged_in"] = True
             session["username"] = username
             return redirect(url_for('file_transfer.hello'))
