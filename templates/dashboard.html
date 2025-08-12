@@ -484,6 +484,7 @@
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const uploadForm = document.getElementById('uploadForm');
+        const uploadBtn = document.querySelector('.upload-btn');
 
         // Handle drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -500,7 +501,20 @@
         });
 
         dropZone.addEventListener('drop', handleDrop, false);
-        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Handle click events - only on the drop zone, not the button
+        dropZone.addEventListener('click', function(e) {
+            // Don't trigger file input if clicking on the button itself
+            if (!e.target.closest('.upload-btn') && !e.target.closest('.file-input-wrapper')) {
+                fileInput.click();
+            }
+        });
+
+        // Handle button click separately
+        uploadBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            fileInput.click();
+        });
 
         fileInput.addEventListener('change', handleFileSelect);
 
