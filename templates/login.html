@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
+        /* Apply border-box globally so padding/border are included in width */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         body {
             background: #f6f8fa;
             display: flex;
@@ -14,6 +19,7 @@
             margin: 0;
             font-family: 'Inter', Arial, sans-serif;
         }
+
         .login-container {
             background: #fff;
             padding: 2.5rem 2rem;
@@ -23,6 +29,7 @@
             max-width: 350px;
             width: 100%;
         }
+
         .login-title {
             font-size: 1.7rem;
             font-weight: 600;
@@ -30,6 +37,7 @@
             color: #222;
             text-align: center;
         }
+
         .login-form input[type="text"],
         .login-form input[type="password"] {
             width: 100%;
@@ -41,12 +49,14 @@
             font-size: 1rem;
             transition: border 0.2s;
         }
+
         .login-form input[type="text"]:focus,
         .login-form input[type="password"]:focus {
             border: 1.5px solid #007aff;
             outline: none;
             background: #fff;
         }
+
         .login-form input[type="submit"] {
             width: 100%;
             padding: 0.9rem 1rem;
@@ -59,9 +69,11 @@
             cursor: pointer;
             transition: background 0.2s;
         }
+
         .login-form input[type="submit"]:hover {
             background: #005ecb;
         }
+
         .error-message {
             color: #e74c3c;
             text-align: center;
@@ -84,4 +96,3 @@
     </div>
 </body>
 </html>
-

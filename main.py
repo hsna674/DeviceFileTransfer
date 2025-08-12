@@ -2,14 +2,21 @@ from flask import Flask, request, redirect, url_for, session, render_template, B
 from werkzeug.middleware.proxy_fix import ProxyFix
 import os
 
+PRODUCTION = bool(os.environ.get('PRODUCTION'))
 app = Flask(__name__)
 app.secret_key = os.urandom(32)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
-file_transfer = Blueprint('file_transfer', __name__, url_prefix='/file-transfer')
+if PRODUCTION:
+    url_prefix = "/file-transfer"
+    USERNAME = "admin"
+    PASSWORD = "S3cureP@ssw0rd!2025"
+else:
+    url_prefix = ""
+    USERNAME = "admin"
+    PASSWORD = "admin"
 
-USERNAME = "admin"
-PASSWORD = "S3cureP@ssw0rd!2025"
+file_transfer = Blueprint('file_transfer', __name__, url_prefix=url_prefix)
 
 @file_transfer.route('/login', methods=['GET', 'POST'])
 def login():
