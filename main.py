@@ -2,7 +2,7 @@ from flask import Flask, request, redirect, url_for, session, render_template, B
 from werkzeug.middleware.proxy_fix import ProxyFix
 import os
 
-PRODUCTION = bool(os.environ.get('PRODUCTION'))
+PRODUCTION = os.environ.get('PRODUCTION', '').lower() in ['1', 'true', 'yes']
 app = Flask(__name__)
 app.secret_key = os.urandom(32)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
