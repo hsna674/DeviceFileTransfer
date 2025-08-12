@@ -31,11 +31,22 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def get_user_upload_folder(username):
+    """Get the upload folder path for a specific user"""
+    user_folder = os.path.join(UPLOAD_FOLDER, username)
+    os.makedirs(user_folder, exist_ok=True)
+    return user_folder
+
 def get_file_list():
-    """Get list of uploaded files, sorted by modification time (newest first)"""
+    """Get list of uploaded files for the current user, sorted by modification time (newest first)"""
+    if not session.get("username"):
+        return []
+
+    user_folder = get_user_upload_folder(session["username"])
     files = []
-    if os.path.exists(UPLOAD_FOLDER):
-        for filepath in glob.glob(os.path.join(UPLOAD_FOLDER, '*')):
+
+    if os.path.exists(user_folder):
+        for filepath in glob.glob(os.path.join(user_folder, '*')):
             if os.path.isfile(filepath):
                 stat = os.stat(filepath)
                 files.append({
@@ -49,10 +60,15 @@ def get_file_list():
     return files[:10]
 
 def cleanup_old_files():
-    """Remove files beyond the 10 most recent"""
+    """Remove files beyond the 10 most recent for the current user"""
+    if not session.get("username"):
+        return
+
+    user_folder = get_user_upload_folder(session["username"])
     files = []
-    if os.path.exists(UPLOAD_FOLDER):
-        for filepath in glob.glob(os.path.join(UPLOAD_FOLDER, '*')):
+
+    if os.path.exists(user_folder):
+        for filepath in glob.glob(os.path.join(user_folder, '*')):
             if os.path.isfile(filepath):
                 stat = os.stat(filepath)
                 files.append({
@@ -168,13 +184,15 @@ def dashboard():
         uploaded_file = request.files.get('file')
         if uploaded_file and uploaded_file.filename and allowed_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
+            user_folder = get_user_upload_folder(session["username"])
+
             # Handle duplicate filenames by adding timestamp
-            if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
+            if os.path.exists(os.path.join(user_folder, filename)):
                 name, ext = os.path.splitext(filename)
                 timestamp = datetime.now().strftime("_%Y%m%d_%H%M%S")
                 filename = f"{name}{timestamp}{ext}"
 
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = os.path.join(user_folder, filename)
             uploaded_file.save(file_path)
             flash('File uploaded successfully.', 'success')
             cleanup_old_files()  # Clean up old files after upload
@@ -186,7 +204,11 @@ def dashboard():
 
 @file_transfer.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+    if not session.get("logged_in"):
+        return redirect(url_for('file_transfer.login'))
+
+    user_folder = get_user_upload_folder(session["username"])
+    return send_from_directory(user_folder, filename, as_attachment=True)
 
 @file_transfer.route('/delete/<filename>', methods=['POST'])
 def delete_file(filename):
@@ -194,7 +216,8 @@ def delete_file(filename):
         return redirect(url_for('file_transfer.login'))
 
     try:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        user_folder = get_user_upload_folder(session["username"])
+        file_path = os.path.join(user_folder, filename)
         if os.path.exists(file_path):
             os.remove(file_path)
             flash('File deleted successfully.', 'success')
