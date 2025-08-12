@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(32)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
-file_transfer = Blueprint('file_transfer', __name__, url_prefix='/file-transfer')
+# file_transfer = Blueprint('file_transfer', __name__, url_prefix='/file-transfer')
 
 USERNAME = "admin"
 PASSWORD = "S3cureP@ssw0rd!2025"
@@ -23,7 +23,7 @@ login_form = '''
 </form>
 '''
 
-@file_transfer.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     if request.method == "POST":
@@ -36,18 +36,18 @@ def login():
             error = "Invalid credentials."
     return render_template_string(login_form, error=error)
 
-@file_transfer.route('/logout')
+@app.route('/logout')
 def logout():
     session.pop("logged_in", None)
     return redirect(url_for('file_transfer.login'))
 
-@file_transfer.route('/')
+@app.route('/')
 def hello():
     if not session.get("logged_in"):
         return redirect(url_for('file_transfer.login'))
     return "Hello, World 2! (You are logged in)"
 
-app.register_blueprint(file_transfer)
+# app.register_blueprint(file_transfer)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1010)
