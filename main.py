@@ -86,7 +86,7 @@ def cleanup_old_files():
 app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
 DATABASE = os.path.join(os.path.dirname(__file__), 'users.db')
-ACCESS_CODE = '786020321065335'
+ACCESS_CODE = os.environ.get('ACCESS_CODE', '01452118885053800357')
 
 # Database helpers
 def get_db():
