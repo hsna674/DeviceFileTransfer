@@ -16,35 +16,43 @@
             background-color: #f5f5f7;
             color: #1d1d1f;
             line-height: 1.6;
+            padding: 10px;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding: 20px;
+            margin-bottom: 20px;
+            padding: 15px 20px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .header h1 {
             color: #1d1d1f;
-            font-size: 28px;
+            font-size: clamp(20px, 5vw, 28px);
             font-weight: 600;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .user-info span {
+            font-size: 14px;
+            color: #666;
         }
 
         .logout-btn {
@@ -56,6 +64,10 @@
             text-decoration: none;
             font-weight: 500;
             transition: background-color 0.2s;
+            font-size: 14px;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
         }
 
         .logout-btn:hover {
@@ -65,27 +77,31 @@
         .upload-section {
             background: white;
             border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .upload-section h2 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #1d1d1f;
-            font-size: 22px;
+            font-size: clamp(18px, 4vw, 22px);
             font-weight: 600;
         }
 
         .drop-zone {
             border: 2px dashed #007aff;
             border-radius: 12px;
-            padding: 40px;
+            padding: 30px 20px;
             text-align: center;
             background: #f8f9ff;
             transition: all 0.3s ease;
             cursor: pointer;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .drop-zone:hover, .drop-zone.dragover {
@@ -101,24 +117,26 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            width: 100%;
         }
 
         .upload-icon {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             background: #007aff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 20px;
+            font-size: 18px;
         }
 
         .drop-zone p {
             color: #666;
-            font-size: 16px;
+            font-size: clamp(14px, 3vw, 16px);
+            margin: 0;
         }
 
         .drop-zone .highlight {
@@ -148,6 +166,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
+            font-size: 14px;
+            min-height: 44px;
         }
 
         .upload-btn:hover {
@@ -157,14 +177,14 @@
         .files-section {
             background: white;
             border-radius: 12px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .files-section h2 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #1d1d1f;
-            font-size: 22px;
+            font-size: clamp(18px, 4vw, 22px);
             font-weight: 600;
         }
 
@@ -174,13 +194,13 @@
 
         .file-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             padding: 15px;
             border: 1px solid #e5e5e7;
             border-radius: 8px;
             margin-bottom: 10px;
             transition: background-color 0.2s;
+            gap: 10px;
         }
 
         .file-item:hover {
@@ -188,8 +208,6 @@
         }
 
         .file-info {
-            display: flex;
-            flex-direction: column;
             flex: 1;
         }
 
@@ -197,40 +215,70 @@
             font-weight: 600;
             color: #1d1d1f;
             margin-bottom: 4px;
+            font-size: 16px;
+            word-break: break-word;
         }
 
         .file-meta {
             color: #666;
+            font-size: 13px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 80px;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
             font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .download-btn {
             background: #34c759;
             color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background-color 0.2s;
         }
 
         .download-btn:hover {
             background: #30a14e;
         }
 
+        .delete-btn {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #d70015;
+        }
+
         .no-files {
             text-align: center;
             color: #666;
             font-style: italic;
-            padding: 40px;
+            padding: 40px 20px;
         }
 
         .alert {
             padding: 12px 16px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .alert.success {
@@ -249,12 +297,127 @@
             font-size: 12px;
             color: #999;
         }
+
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .header {
+                padding: 12px 15px;
+                margin-bottom: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .upload-section, .files-section {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .drop-zone {
+                padding: 20px 15px;
+                min-height: 100px;
+            }
+
+            .upload-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+
+            .file-item {
+                padding: 12px;
+            }
+
+            .file-name {
+                font-size: 15px;
+            }
+
+            .file-actions {
+                gap: 6px;
+            }
+
+            .action-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+                min-height: 36px;
+            }
+
+            .user-info {
+                justify-content: flex-end;
+                width: 100%;
+            }
+
+            .user-info span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .header h1 {
+                text-align: center;
+                font-size: 20px;
+            }
+
+            .user-info {
+                justify-content: center;
+            }
+
+            .drop-zone {
+                padding: 15px 10px;
+                min-height: 90px;
+            }
+
+            .drop-zone p {
+                font-size: 14px;
+            }
+
+            .upload-btn {
+                padding: 10px 20px;
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .file-item:hover {
+                background: inherit;
+            }
+
+            .action-btn {
+                min-height: 44px;
+                font-size: 14px;
+            }
+
+            .upload-btn {
+                min-height: 44px;
+            }
+
+            .logout-btn {
+                min-height: 44px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>File Transfer Dashboard</h1>
+            <h1>File Transfer</h1>
             <div class="user-info">
                 <span>Welcome, {{ session.username }}!</span>
                 <a href="{{ url_for('file_transfer.logout') }}" class="logout-btn">Logout</a>
@@ -275,8 +438,8 @@
                 <div class="drop-zone" id="dropZone">
                     <div class="drop-zone-content">
                         <div class="upload-icon">📁</div>
-                        <p><span class="highlight">Click to upload</span> or drag and drop files here</p>
-                        <p class="file-size">Maximum file size: 100MB</p>
+                        <p><span class="highlight">Tap to upload</span> or drag files here</p>
+                        <p class="file-size">Max: 100MB</p>
                         <div class="file-input-wrapper">
                             <input type="file" name="file" id="fileInput" class="file-input" accept=".txt,.pdf,.png,.jpg,.jpeg,.gif,.doc,.docx,.zip,.rar,.mp4,.mp3,.avi,.mov">
                             <button type="button" class="upload-btn">Choose File</button>
@@ -287,7 +450,7 @@
         </div>
 
         <div class="files-section">
-            <h2>Recent Files (Last 10)</h2>
+            <h2>Your Files</h2>
             {% if files %}
                 <ul class="file-list">
                     {% for file in files %}
@@ -295,17 +458,24 @@
                             <div class="file-info">
                                 <div class="file-name">{{ file.name }}</div>
                                 <div class="file-meta">
-                                    Size: {{ "%.2f"|format(file.size / 1024 / 1024) }} MB |
-                                    Uploaded: {{ file.modified.strftime('%Y-%m-%d %H:%M') }}
+                                    {{ "%.1f"|format(file.size / 1024 / 1024) }} MB •
+                                    {{ file.modified.strftime('%m/%d %H:%M') }}
                                 </div>
                             </div>
-                            <a href="{{ url_for('file_transfer.uploaded_file', filename=file.name) }}"
-                               class="download-btn" download>Download</a>
+                            <div class="file-actions">
+                                <a href="{{ url_for('file_transfer.uploaded_file', filename=file.name) }}"
+                                   class="action-btn download-btn" download>Download</a>
+                                <form method="POST" action="{{ url_for('file_transfer.delete_file', filename=file.name) }}"
+                                      style="display: inline; flex: 1;"
+                                      onsubmit="return confirm('Delete {{ file.name }}?')">
+                                    <button type="submit" class="action-btn delete-btn" style="width: 100%;">Delete</button>
+                                </form>
+                            </div>
                         </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <div class="no-files">No files uploaded yet. Upload your first file above!</div>
+                <div class="no-files">No files yet. Upload your first file above!</div>
             {% endif %}
         </div>
     </div>
@@ -365,4 +535,3 @@
     </script>
 </body>
 </html>
-

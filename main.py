@@ -188,6 +188,23 @@ def dashboard():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
+@file_transfer.route('/delete/<filename>', methods=['POST'])
+def delete_file(filename):
+    if not session.get("logged_in"):
+        return redirect(url_for('file_transfer.login'))
+
+    try:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            flash('File deleted successfully.', 'success')
+        else:
+            flash('File not found.', 'error')
+    except OSError:
+        flash('Error deleting file.', 'error')
+
+    return redirect(url_for('file_transfer.dashboard'))
+
 with app.app_context():
     init_db()
 app.register_blueprint(file_transfer)
