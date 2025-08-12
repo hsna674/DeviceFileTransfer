@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, session, render_template_string, Blueprint
+from flask import Flask, request, redirect, url_for, session, render_template, Blueprint
 from werkzeug.middleware.proxy_fix import ProxyFix
 import os
 
@@ -11,18 +11,6 @@ file_transfer = Blueprint('file_transfer', __name__, url_prefix='/file-transfer'
 USERNAME = "admin"
 PASSWORD = "S3cureP@ssw0rd!2025"
 
-login_form = '''
-<!doctype html>
-<title>Login</title>
-<h2>Login</h2>
-<form method="post">
-  <input type="text" name="username" placeholder="Username" required><br>
-  <input type="password" name="password" placeholder="Password" required><br>
-  <input type="submit" value="Login">
-  {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
-</form>
-'''
-
 @file_transfer.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -34,7 +22,7 @@ def login():
             return redirect(url_for('file_transfer.hello'))
         else:
             error = "Invalid credentials."
-    return render_template_string(login_form, error=error)
+    return render_template('login.html', error=error)
 
 @file_transfer.route('/logout')
 def logout():
