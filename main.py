@@ -1,9 +1,11 @@
-from flask import Flask, request, redirect, url_for, session, render_template, Blueprint, g
+from flask import Flask, request, redirect, url_for, session, render_template, Blueprint, g, flash, send_from_directory
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import sqlite3
 import os
-from datetime import timedelta
+from datetime import timedelta, datetime
+import glob
 
 PRODUCTION = os.environ.get('PRODUCTION', '').lower() in ['1', 'true', 'yes']
 app = Flask(__name__)
@@ -15,6 +17,58 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 app.config['SESSION_COOKIE_SECURE'] = PRODUCTION
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# File upload configuration
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max file size
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'zip', 'rar', 'mp4', 'mp3', 'avi', 'mov'}
+
+# Create uploads directory if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def get_file_list():
+    """Get list of uploaded files, sorted by modification time (newest first)"""
+    files = []
+    if os.path.exists(UPLOAD_FOLDER):
+        for filepath in glob.glob(os.path.join(UPLOAD_FOLDER, '*')):
+            if os.path.isfile(filepath):
+                stat = os.stat(filepath)
+                files.append({
+                    'name': os.path.basename(filepath),
+                    'size': stat.st_size,
+                    'modified': datetime.fromtimestamp(stat.st_mtime)
+                })
+
+    # Sort by modification time (newest first) and keep only last 10
+    files.sort(key=lambda x: x['modified'], reverse=True)
+    return files[:10]
+
+def cleanup_old_files():
+    """Remove files beyond the 10 most recent"""
+    files = []
+    if os.path.exists(UPLOAD_FOLDER):
+        for filepath in glob.glob(os.path.join(UPLOAD_FOLDER, '*')):
+            if os.path.isfile(filepath):
+                stat = os.stat(filepath)
+                files.append({
+                    'path': filepath,
+                    'modified': datetime.fromtimestamp(stat.st_mtime)
+                })
+
+    # Sort by modification time (newest first)
+    files.sort(key=lambda x: x['modified'], reverse=True)
+
+    # Remove files beyond the 10 most recent
+    for file_info in files[10:]:
+        try:
+            os.remove(file_info['path'])
+        except OSError:
+            pass
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
@@ -100,7 +154,39 @@ def logout():
 def hello():
     if not session.get("logged_in"):
         return redirect(url_for('file_transfer.login'))
-    return f"Hello, {session.get('username', 'User')}!"
+    return redirect(url_for('file_transfer.dashboard'))
+
+@file_transfer.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
+    if not session.get("logged_in"):
+        return redirect(url_for('file_transfer.login'))
+
+    files = get_file_list()
+
+    if request.method == 'POST':
+        # Handle file upload
+        uploaded_file = request.files.get('file')
+        if uploaded_file and uploaded_file.filename and allowed_file(uploaded_file.filename):
+            filename = secure_filename(uploaded_file.filename)
+            # Handle duplicate filenames by adding timestamp
+            if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
+                name, ext = os.path.splitext(filename)
+                timestamp = datetime.now().strftime("_%Y%m%d_%H%M%S")
+                filename = f"{name}{timestamp}{ext}"
+
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            uploaded_file.save(file_path)
+            flash('File uploaded successfully.', 'success')
+            cleanup_old_files()  # Clean up old files after upload
+            return redirect(url_for('file_transfer.dashboard'))  # Redirect to avoid resubmission
+        else:
+            flash('Invalid file type or no file selected.', 'error')
+
+    return render_template('dashboard.html', files=files)
+
+@file_transfer.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 with app.app_context():
     init_db()
